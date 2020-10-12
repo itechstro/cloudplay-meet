@@ -6,7 +6,7 @@ import {
     createStartMutedConfigurationEvent,
     sendAnalytics
 } from '../../analytics';
-import { getName } from '../../app';
+import { getName } from '../../app/functions';
 import { endpointMessageReceived } from '../../subtitles';
 import { JITSI_CONNECTION_CONFERENCE_KEY } from '../connection';
 import { JitsiConferenceEvents } from '../lib-jitsi-meet';
@@ -45,10 +45,8 @@ import {
     SEND_TONES,
     SET_DESKTOP_SHARING_ENABLED,
     SET_FOLLOW_ME,
-    SET_MAX_RECEIVER_VIDEO_QUALITY,
     SET_PASSWORD,
     SET_PASSWORD_FAILED,
-    SET_PREFERRED_VIDEO_QUALITY,
     SET_ROOM,
     SET_PENDING_SUBJECT_CHANGE,
     SET_START_MUTED_POLICY
@@ -616,23 +614,6 @@ export function setFollowMe(enabled: boolean) {
 }
 
 /**
- * Sets the max frame height that should be received from remote videos.
- *
- * @param {number} maxReceiverVideoQuality - The max video frame height to
- * receive.
- * @returns {{
- *     type: SET_MAX_RECEIVER_VIDEO_QUALITY,
- *     maxReceiverVideoQuality: number
- * }}
- */
-export function setMaxReceiverVideoQuality(maxReceiverVideoQuality: number) {
-    return {
-        type: SET_MAX_RECEIVER_VIDEO_QUALITY,
-        maxReceiverVideoQuality
-    };
-}
-
-/**
  * Sets the password to join or lock a specific JitsiConference.
  *
  * @param {JitsiConference} conference - The JitsiConference which requires a
@@ -699,24 +680,6 @@ export function setPassword(
 }
 
 /**
- * Sets the max frame height the user prefers to send and receive from the
- * remote participants.
- *
- * @param {number} preferredVideoQuality - The max video resolution to send and
- * receive.
- * @returns {{
- *     type: SET_PREFERRED_VIDEO_QUALITY,
- *     preferredVideoQuality: number
- * }}
- */
-export function setPreferredVideoQuality(preferredVideoQuality: number) {
-    return {
-        type: SET_PREFERRED_VIDEO_QUALITY,
-        preferredVideoQuality
-    };
-}
-
-/**
  * Sets (the name of) the room of the conference to be joined.
  *
  * @param {(string|undefined)} room - The name of the room of the conference to
@@ -763,12 +726,12 @@ export function setStartMutedPolicy(
  * @param {string} subject - The new subject.
  * @returns {void}
  */
-export function setSubject(subject: string = '') {
+export function setSubject(subject: string) {
     return (dispatch: Dispatch<any>, getState: Function) => {
         const { conference } = getState()['features/base/conference'];
 
         if (conference) {
-            conference.setSubject(subject);
+            conference.setSubject(subject || '');
         } else {
             dispatch({
                 type: SET_PENDING_SUBJECT_CHANGE,
